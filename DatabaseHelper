@@ -1,0 +1,67 @@
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    companion object {
+        private const val DATABASE_NAME = "contacts.db"
+        private const val DATABASE_VERSION = 1
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+        db?.execSQL("CREATE TABLE contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone_number TEXT)")
+    }
+
+
+    fun insertContact(contact: Contact): Long {
+        val values = ContentValues().apply {
+            put("name", contact.name)
+            put("phone_number", contact.phoneNumber)
+        }
+
+        val db = writableDatabase
+        val id = db.insert("contacts", null, values)
+        db.close()
+        return id
+    }
+
+    fun getAllContacts(): ArrayList<Contact> {
+        val contactList = ArrayList<Contact>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM contacts", null)
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow("phone_number"))
+
+                contactList.add(Contact(name, phoneNumber, id))
+            } while (cursor.moveToNext())
+        }
+
+        cursor?.close()
+        db.close()
+        return contactList
+    }
+
+    fun updateContact(contact: Contact) {
+        val values = ContentValues().apply {
+            put("name", contact.name)
+            put("phone_number", contact.phoneNumber)
+        }
+
+        val db = writableDatabase
+        db.update("contacts", values, "id=?", arrayOf(contact.id.toString()))
+        db.close()
+    }
+
+    fun deleteContact(id: Int) {
+        val db = writableDatabase
+        db.delete("contacts", "id=?", arrayOf(id.toString()))
+        db.close()
+    }
+}
+}
