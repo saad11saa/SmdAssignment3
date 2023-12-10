@@ -1,0 +1,37 @@
+package data
+
+import ContactListViewModel
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun ContactListScreen(
+    viewModel: ContactListViewModel = ContactListViewModel(),
+    modifier: Modifier = Modifier
+) {
+    val contactList by viewModel.contactList.observeAsState()
+
+    Column(modifier = modifier.fillMaxSize()) {
+        Button(
+            onClick = viewModel::importContacts,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text("Import Contacts")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (contactList.isEmpty()) {
+            Text(text = "No contacts found", modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            ContactList(contactList, viewModel::onContactClick)
+        }
+    }
+}
