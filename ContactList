@@ -1,0 +1,19 @@
+package data
+import Contact
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Card
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun ContactList(contactList: List<Contact>, onContactClick: (Contact) -> Unit) {
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        items(ContactList) { contact ->
+            ContactCard(Contact, onContactClick)
+        }
+    }
+}
